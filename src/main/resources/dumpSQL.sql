@@ -29,6 +29,7 @@ CREATE TABLE public.orders(
 CREATE TABLE public.order_products(
     order_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
     PRIMARY KEY (order_id, product_id),
     FOREIGN KEY (order_id) REFERENCES public.orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE
@@ -66,19 +67,17 @@ VALUES
     (5, 63.75);
 
 -- Insert dummy data into the order_products table
-INSERT INTO public.order_products (order_id, product_id)
+INSERT INTO order_products (order_id, product_id, quantity)
 VALUES
-    (1, 1),
-    (1, 2),
-    (2, 1),
-    (3, 3),
-    (3, 4),
-    (3, 5),
-    (4, 1),
-    (4, 2),
-    (4, 3),
-    (4, 4),
-    (5, 2),
-    (5, 3),
-    (5, 5),
-    (5, 6);
+    (1, 1, 2),
+    (1, 2, 1),
+    (2, 2, 3),
+    (2, 3, 1),
+    (3, 1, 1),
+    (3, 3, 2),
+    (4, 1, 3),
+    (4, 2, 2),
+    (4, 3, 1),
+    (5, 1, 1),
+    (5, 2, 1),
+    (5, 3, 1);
