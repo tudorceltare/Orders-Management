@@ -14,6 +14,18 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Abstract class that implements the basic CRUD operations (create, read, update, delete) for a database table.
+ * Methods are generic and use reflection to access the fields of the entity. Methods "create" and "updateById" use the
+ * final object as a parameter. This class should be extended by all DAO classes.
+ * Method create: inserts an entity into the database using "INSERT INTO tableName (fields) VALUES (values)" query.
+ * Method findById: finds an entity in the database using "SELECT * FROM tableName WHERE id = ?" query.
+ * Method findAll: finds all entities in the database using "SELECT * FROM tableName" query.
+ * Method updateById: updates an entity in the database using
+ *  "UPDATE tableName SET field1 = ?, field2 = ?, ... WHERE id = ?" query.
+ * Method deleteById: deletes an entity from the database using "DELETE FROM tableName WHERE id = ?" query.
+ * @param <T>
+ */
 public abstract class AbstractDAO<T> {
     protected static final Logger LOGGER = Logger.getLogger(AbstractDAO.class.getName());
 
