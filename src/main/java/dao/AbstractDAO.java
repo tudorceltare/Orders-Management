@@ -183,7 +183,8 @@ public abstract class AbstractDAO<T> {
                 Field[] fields = type.getDeclaredFields();
                 for (Field field : fields) {
                     String fieldName = field.getName();
-                    Object value = rs.getObject(fieldName);
+                    String snakeCaseFieldName = camelCaseToSnakeCase(fieldName);
+                    Object value = rs.getObject(snakeCaseFieldName);
                     PropertyDescriptor propertyDescriptor = new PropertyDescriptor(fieldName, type);
                     Method method = propertyDescriptor.getWriteMethod();
                     method.invoke(entity, value);
@@ -200,5 +201,12 @@ public abstract class AbstractDAO<T> {
     // helper method to get the table name for the entity
     protected String getTableName() {
         return type.getSimpleName().toLowerCase() + "s";
+    }
+
+    // helper method to convert camelCase to snake_case
+    protected String camelCaseToSnakeCase(String camelCase) {
+        String regex = "([a-z])([A-Z]+)";
+        String replacement = "$1_$2";
+        return camelCase.replaceAll(regex, replacement).toLowerCase();
     }
 }

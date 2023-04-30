@@ -1,12 +1,12 @@
 package connection;
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+//import com.sun.org.slf4j.internal.Logger;
+//import com.sun.org.slf4j.internal.LoggerFactory;
 
 import java.sql.*;
 
 public class ConnectionFactory {
-    public static final Logger LOGGER = LoggerFactory.getLogger(ConnectionFactory.class);
+//    public static final Logger LOGGER = LoggerFactory.getLogger(ConnectionFactory.class);
     public static final String DRIVER = "org.postgresql.Driver";
     public static final String URL = "jdbc:postgresql://localhost:5432/pt-database";
     public static final String USER = "postgres";
@@ -27,7 +27,8 @@ public class ConnectionFactory {
         try {
             connection = DriverManager.getConnection(URL, USER, PASS);
         } catch (SQLException e) {
-            LOGGER.error("ERROR: Unable to Connect to Database.");
+            e.printStackTrace();
+//            LOGGER.error("ERROR: Unable to Connect to Database.");
         }
         return connection;
     }
@@ -42,7 +43,7 @@ public class ConnectionFactory {
                 connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-                LOGGER.error("ERROR: Unable to close connection.");
+//                LOGGER.error("ERROR: Unable to close connection.");
             }
         }
     }
@@ -53,7 +54,7 @@ public class ConnectionFactory {
                 statement.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-                LOGGER.error("ERROR: Unable to close statement.");
+//                LOGGER.error("ERROR: Unable to close statement.");
             }
         }
     }
@@ -64,7 +65,7 @@ public class ConnectionFactory {
                 resultSet.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-                LOGGER.error("ERROR: Unable to close result set.");
+//                LOGGER.error("ERROR: Unable to close result set.");
             }
         }
     }
