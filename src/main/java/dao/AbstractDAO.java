@@ -160,12 +160,14 @@ public abstract class AbstractDAO<T> {
      * @param id The id of the entity to be deleted
      * @throws SQLException If the query fails
      */
-    public void deleteById(int id) throws SQLException {
+    public void deleteById(int id) {
         String sql = "DELETE FROM " + getTableName() + " WHERE id = ?";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING, type.getName() + "DAO:deleteById " + e.getMessage());
         }
     }
 
