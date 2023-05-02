@@ -1,14 +1,12 @@
 package presentation;
 
-import dao.ProductDAO;
 import model.Product;
 import service.ProductService;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProductView extends JFrame {
@@ -20,6 +18,11 @@ public class ProductView extends JFrame {
     private JButton backButton;
     private JPanel productsPanel;
     private JScrollPane tableScrollPane;
+    private JTextField nameTextField;
+    private JTextField priceTextField;
+    private JTextField quantityTextField;
+    private JTextField idTextField;
+    private JButton clearFieldsButton;
 
     private ProductService productService;
     public ProductView() {
@@ -33,12 +36,71 @@ public class ProductView extends JFrame {
         ProductTableModel productTableModel = new ProductTableModel(products);
         productsTable.setModel(productTableModel);
         productsTable.setAutoCreateRowSorter(true);
+        productsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        idTextField.setEnabled(false);
         add(productsPanel);
     }
 
     public void addBackButtonListener(ActionListener actionListener) {
         backButton.addActionListener(actionListener);
     }
+
+    public void addAddButtonListener(ActionListener actionListener) {
+        addButton.addActionListener(actionListener);
+    }
+
+    public void addUpdateButtonListener(ActionListener actionListener) {
+        updateButton.addActionListener(actionListener);
+    }
+
+    public void addDeleteButtonListener(ActionListener actionListener) {
+        deleteButton.addActionListener(actionListener);
+    }
+
+    public void addClearFieldsButtonListener(ActionListener actionListener) {
+        clearFieldsButton.addActionListener(actionListener);
+    }
+
+    public void addProductsTableListener(ListSelectionListener listSelectionListener) {
+        productsTable.getSelectionModel().addListSelectionListener(listSelectionListener);
+    }
+
+    public String getIdTextField() {
+        return idTextField.getText();
+    }
+
+    public String getNameTextField() {
+        return nameTextField.getText();
+    }
+
+    public String getPriceTextField() {
+        return priceTextField.getText();
+    }
+
+    public String getQuantityTextField() {
+        return quantityTextField.getText();
+    }
+
+    public JTable getProductsTable() {
+        return productsTable;
+    }
+
+    public void setIdTextField(String id) {
+        idTextField.setText(id);
+    }
+
+    public void setNameTextField(String name) {
+        nameTextField.setText(name);
+    }
+
+    public void setPriceTextField(String price) {
+        priceTextField.setText(price);
+    }
+
+    public void setQuantityTextField(String quantity) {
+        quantityTextField.setText(quantity);
+    }
+
 
     private static class ProductTableModel extends AbstractTableModel {
         private final List<Product> products;

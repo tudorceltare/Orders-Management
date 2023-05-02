@@ -29,7 +29,8 @@ public class ProductService {
         return null;
     }
 
-    public void create(Product product) {
+    public void create(Product product) throws IllegalArgumentException {
+        checkIfProductValid(product);
         try {
             productDAO.create(product);
         } catch (Exception e) {
@@ -37,11 +38,24 @@ public class ProductService {
         }
     }
 
-    public void updateById(Product product) {
+    public void updateById(Product product) throws IllegalArgumentException {
         try {
+            checkIfProductValid(product);
             productDAO.updateById(product);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void checkIfProductValid(Product product) throws IllegalArgumentException {
+        if (product.getName() == null || product.getName().equals("")) {
+            throw new IllegalArgumentException("Name cannot be empty");
+        }
+        if (product.getPrice() < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+        if (product.getQuantity() < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
         }
     }
 

@@ -17,14 +17,14 @@ import java.util.logging.Logger;
 /**
  * Abstract class that implements the basic CRUD operations (create, read, update, delete) for a database table.
  * Methods are generic and use reflection to access the fields of the entity. Methods "create" and "updateById" use the
- * final object as a parameter. This class should be extended by all DAO classes.
- * Method create: inserts an entity into the database using "INSERT INTO tableName (fields) VALUES (values)" query.
- * Method findById: finds an entity in the database using "SELECT * FROM tableName WHERE id = ?" query.
- * Method findAll: finds all entities in the database using "SELECT * FROM tableName" query.
- * Method updateById: updates an entity in the database using
- *  "UPDATE tableName SET field1 = ?, field2 = ?, ... WHERE id = ?" query.
- * Method deleteById: deletes an entity from the database using "DELETE FROM tableName WHERE id = ?" query.
- * @param <T>
+ * final object as a parameter. This class should be extended by all DAO classes.<br>
+ * Method <b>create</b>: inserts an entity into the database using "<i>INSERT INTO tableName (fields) VALUES (values)</i>" query.<br>
+ * Method <b>findById</b>: finds an entity in the database using "<i>SELECT * FROM tableName WHERE id = ?</i>" query.<br>
+ * Method <b>findAll</b>: finds all entities in the database using " <i>SELECT * FROM tableName</i>" query.<br>
+ * Method <b>updateById</b>: updates an entity in the database using
+ *  "<i>UPDATE tableName SET field1 = ?, field2 = ?, ... WHERE id = ?</i>" query.<br>
+ * Method <b>deleteById</b>: deletes an entity from the database using "<i>DELETE FROM tableName WHERE id = ?</i>" query.<br>
+ * @param <T> The type of the entity
  */
 public abstract class AbstractDAO<T> {
     protected static final Logger LOGGER = Logger.getLogger(AbstractDAO.class.getName());
@@ -100,8 +100,8 @@ public abstract class AbstractDAO<T> {
 
     /**
      * Finds all the entities in the database using a "SELECT * FROM table_name" query
-     * @return
-     * @throws SQLException
+     * @return A list of all the entities in the database
+     * @throws SQLException If the query fails
      */
     public List<T> findAll() throws SQLException {
         String sql = "SELECT * FROM " + getTableName();
@@ -122,18 +122,21 @@ public abstract class AbstractDAO<T> {
      */
     public void updateById(T entity) throws SQLException, IllegalAccessException {
         StringBuilder fields = new StringBuilder();
-        StringBuilder values = new StringBuilder();
         StringBuilder sql = new StringBuilder("UPDATE " + getTableName() + " SET ");
         Field[] declaredFields = type.getDeclaredFields();
         String ending = " WHERE id = ";
         for(Field field : declaredFields) {
             if (!field.getName().equals("id")) {
-                sql.append(field.getName()).append(" = ?, ");
+                if (fields.length() > 0) {
+                    fields.append(", ");
+                }
+                fields.append(field.getName()).append(" = ?");
             } else {
                 field.setAccessible(true);
                 ending += field.get(entity).toString();
             }
         }
+        sql.append(fields);
         sql.append(ending);
         LOGGER.info("Query before adding values: " + sql);
 

@@ -29,6 +29,7 @@ public class OrderView extends JFrame {
         OrderTableModel orderTableModel = new OrderTableModel(orders);
         ordersTable.setModel(orderTableModel);
         ordersTable.setAutoCreateRowSorter(true);
+        ordersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(ordersPanel);
     }
 

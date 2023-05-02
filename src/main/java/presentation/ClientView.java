@@ -4,6 +4,7 @@ import model.Client;
 import service.ClientService;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -18,6 +19,10 @@ public class ClientView extends JFrame {
     private JButton backButton;
     private JTable clientsTable;
     private JScrollPane tableScrollPane;
+    private JTextField idTextField;
+    private JTextField nameTextField;
+    private JTextField emailTextField;
+    private JButton clearFieldsButton;
 
     public ClientView() {
         super.setTitle("Clients");
@@ -30,11 +35,61 @@ public class ClientView extends JFrame {
         ClientTableModel clientTableModel = new ClientTableModel(clients);
         clientsTable.setModel(clientTableModel);
         clientsTable.setAutoCreateRowSorter(true);
+        clientsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        idTextField.setEnabled(false);
         add(clientsPanel);
     }
 
     public void addBackButtonListener(ActionListener actionListener) {
         backButton.addActionListener(actionListener);
+    }
+
+    public void addAddButtonListener(ActionListener actionListener) {
+        addButton.addActionListener(actionListener);
+    }
+
+    public void addUpdateButtonListener(ActionListener actionListener) {
+        updateButton.addActionListener(actionListener);
+    }
+
+    public void addDeleteButtonListener(ActionListener actionListener) {
+        deleteButton.addActionListener(actionListener);
+    }
+
+    public void addClearFieldsButtonListener(ActionListener actionListener) {
+        clearFieldsButton.addActionListener(actionListener);
+    }
+
+    public void addClientsTableListener(ListSelectionListener listSelectionListener) {
+        clientsTable.getSelectionModel().addListSelectionListener(listSelectionListener);
+    }
+
+    public String getIdTextField() {
+        return idTextField.getText();
+    }
+
+    public String getNameTextField() {
+        return nameTextField.getText();
+    }
+
+    public String getEmailTextField() {
+        return emailTextField.getText();
+    }
+
+    public JTable getClientsTable() {
+        return clientsTable;
+    }
+
+    public void setIdTextField(String id) {
+        idTextField.setText(id);
+    }
+
+    public void setNameTextField(String name) {
+        nameTextField.setText(name);
+    }
+
+    public void setEmailTextField(String email) {
+        emailTextField.setText(email);
     }
 
     private static class ClientTableModel extends AbstractTableModel {
