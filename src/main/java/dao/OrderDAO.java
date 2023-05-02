@@ -148,6 +148,7 @@ public class OrderDAO extends AbstractDAO<Order> {
                 Client client = clientMap.get(rs1.getInt("client_id"));
                 order.setClient(client);
                 order.setTotalPrice(rs1.getDouble("total_price"));
+                order.setProducts(new ArrayList<Product>());
                 orders.put(order.getId(), order);
             }
             while (rs2.next()) {

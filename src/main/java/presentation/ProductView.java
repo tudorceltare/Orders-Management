@@ -37,7 +37,6 @@ public class ProductView extends JFrame {
         productsTable.setModel(productTableModel);
         productsTable.setAutoCreateRowSorter(true);
         productsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        idTextField.setEnabled(false);
         add(productsPanel);
     }
 

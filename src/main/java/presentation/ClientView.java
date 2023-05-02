@@ -36,7 +36,6 @@ public class ClientView extends JFrame {
         clientsTable.setModel(clientTableModel);
         clientsTable.setAutoCreateRowSorter(true);
         clientsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        idTextField.setEnabled(false);
         add(clientsPanel);
     }
 

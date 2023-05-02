@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 public class Order {
     private int id;
-    private int clientId;
-    private List<Integer> productIds;
+    private Client client;
+    private List<Product> products;
     private double totalPrice;
 }
