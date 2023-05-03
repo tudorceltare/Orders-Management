@@ -1,6 +1,7 @@
 package presentation;
 
 import model.Client;
+import model.Order;
 import model.Product;
 import service.ClientService;
 import service.OrderService;
@@ -11,6 +12,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class Controller {
     private ProductService productService;
@@ -60,6 +62,20 @@ public class Controller {
         return productView;
     }
 
+    private OrderView initOrderView() {
+        OrderView orderView = new OrderView();
+        orderView.addBackButtonListener(new BackButtonListener());
+        orderView.addDeleteButtonListener(new OrdersDeleteButtonListener());
+        orderView.addOrdersTableListener(new OrdersTableListener());
+        orderView.addClientsTableListener(new OrdersClientsTableListener());
+        orderView.addAllProductsTableListener(new OrdersAllProductsTableListener());
+        orderView.addAddProductButtonListener(new OrdersAddProductButtonListener());
+        orderView.addNewOrderProductsTableListener(new OrdersNewOrderProductsTableListener());
+        orderView.addRemoveProductButtonListener(new OrdersRemoveProductButtonListener());
+        orderView.addCreateOrderButtonListener(new OrdersCreateOrderButtonListener());
+        return orderView;
+    }
+
     class ClientsButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -81,8 +97,7 @@ public class Controller {
     class OrdersButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            orderView = new OrderView();
-            orderView.addBackButtonListener(new BackButtonListener());
+            orderView = initOrderView();
             dashboardView.setVisible(false);
             orderView.setVisible(true);
         }
@@ -292,6 +307,188 @@ public class Controller {
                 clientView.setIdTextField(clientView.getClientsTable().getValueAt(row, 0).toString());
                 clientView.setNameTextField(clientView.getClientsTable().getValueAt(row, 1).toString());
                 clientView.setEmailTextField(clientView.getClientsTable().getValueAt(row, 2).toString());
+            }
+        }
+    }
+
+    class OrdersDeleteButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String id = orderView.getGroupIdField();
+            if (id.equals("")) {
+                JOptionPane.showMessageDialog(null, "Please select an order!");
+            } else {
+                try {
+                    orderService.deleteById(Integer.parseInt(id));
+                    JOptionPane.showMessageDialog(null, "Order deleted successfully!");
+                    orderView.setVisible(false);
+                    orderView = initOrderView();
+                    orderView.setVisible(true);
+                } catch (NumberFormatException exception) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid id!");
+                }
+            }
+        }
+    }
+
+    class OrdersTableListener implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if(e.getValueIsAdjusting()) {
+                int row = orderView.getOrdersTable().getSelectedRow();
+                orderView.setGroupIdField(orderView.getOrdersTable().getValueAt(row, 0).toString());
+                Order selectedOrder = orderService.findById(Integer.parseInt(orderView.getGroupIdField()));
+                orderView.setSelectedOrder(selectedOrder);
+                orderView.setOrderProductsTableModel(new OrderView.OrderProductsTableModel(selectedOrder.getProducts()));
+            }
+        }
+    }
+
+    class OrdersClientsTableListener implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if(e.getValueIsAdjusting()) {
+                int row = orderView.getClientsTable().getSelectedRow();
+                orderView.setSelectedClient(clientService.findById(Integer.parseInt(orderView.getClientsTable().getValueAt(row, 0).toString())));
+                orderView.setClientNameTextField(orderView.getClientsTable().getValueAt(row, 1).toString());
+            }
+        }
+    }
+
+    class OrdersAllProductsTableListener implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if(e.getValueIsAdjusting()) {
+                int row = orderView.getAllProductsTable().getSelectedRow();
+                Product selectedProduct = productService.findById(Integer.parseInt(orderView.getAllProductsTable().getValueAt(row, 0).toString()));
+                orderView.setSelectedNewProduct(selectedProduct);
+                orderView.setProductIdTextField(String.valueOf(selectedProduct.getId()));
+                orderView.setProductNameTextField(selectedProduct.getName());
+                orderView.setPriceTextField(String.valueOf(selectedProduct.getPrice()));
+            }
+        }
+    }
+
+    class OrdersAddProductButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Product selectedProduct = orderView.getSelectedNewProduct();
+            String quantity = orderView.getQuantityTextField();
+            if (quantity.equals("")) {
+                JOptionPane.showMessageDialog(null, "Please fill all the fields!");
+            } else if (selectedProduct == null) {
+                JOptionPane.showMessageDialog(null, "Please select a product!");
+            } else {
+                try {
+                    if (orderService.checkIfValidQuantityOfProduct(selectedProduct, Integer.parseInt(quantity))) {
+                        selectedProduct.setQuantity(Integer.parseInt(quantity));
+                        if (orderService.checkIfNewOrderAlreadyContainsSelectedProduct(orderView.getNewOrder(), selectedProduct)) {
+                            for(Product product : orderView.getNewOrder().getProducts()) {
+                                if(product.getId() == selectedProduct.getId()) {
+                                    product.setQuantity(selectedProduct.getQuantity());
+                                    break;
+                                }
+                            }
+                        } else {
+                            orderView.getNewOrder().getProducts().add(selectedProduct);
+                        }
+                        this.updateOrderTotalPrice(orderView.getNewOrder());
+                        orderView.setNewOrderProductsTableModel(new OrderView.OrderProductsTableModel(orderView.getNewOrder().getProducts()));
+                        orderView.setTotalTextField(String.valueOf(orderView.getNewOrder().getTotalPrice()));
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Not enough products in stock!");
+                    }
+                } catch (IllegalArgumentException exception) {
+                    JOptionPane.showMessageDialog(null, exception.getMessage());
+                }
+            }
+        }
+
+        private void updateOrderTotalPrice(Order order) {
+            order.setTotalPrice(0);
+            for(Product product : order.getProducts()) {
+                order.setTotalPrice(order.getTotalPrice() + product.getPrice() * product.getQuantity());
+            }
+        }
+    }
+
+    class OrdersNewOrderProductsTableListener implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if(e.getValueIsAdjusting()) {
+                int row = orderView.getNewOrderProductsTable().getSelectedRow();
+                int columnNumber = orderView.getNewOrderProductsTable().getColumnCount();
+                Product selectedProductInNewOrder = null;
+                if(row >= 0) {
+                    selectedProductInNewOrder = Product.builder()
+                            .id(Integer.parseInt(orderView.getNewOrderProductsTable().getValueAt(row, 0).toString()))
+                            .name(orderView.getNewOrderProductsTable().getValueAt(row, 1).toString())
+                            .price(Float.parseFloat(orderView.getNewOrderProductsTable().getValueAt(row, 2).toString()))
+                            .quantity(Integer.parseInt(orderView.getNewOrderProductsTable().getValueAt(row, 3).toString()))
+                            .build();
+                }
+
+                orderView.setSelectedProductInOrder(selectedProductInNewOrder);
+            }
+        }
+    }
+
+    class OrdersRemoveProductButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Product selectedProduct = orderView.getSelectedProductInOrder();
+            if (selectedProduct == null) {
+                JOptionPane.showMessageDialog(null, "Please select a product!");
+            } else {
+                try {
+                    this.removeProductFromOrder(selectedProduct);
+                    this.updateOrderTotalPrice(orderView.getNewOrder());
+                    orderView.setNewOrderProductsTableModel(new OrderView.OrderProductsTableModel(orderView.getNewOrder().getProducts()));
+                    orderView.setTotalTextField(String.valueOf(orderView.getNewOrder().getTotalPrice()));
+                } catch (IllegalArgumentException exception) {
+                    JOptionPane.showMessageDialog(null, exception.getMessage());
+                }
+            }
+        }
+
+        private void removeProductFromOrder(Product product) {
+            for(Product product1 : orderView.getNewOrder().getProducts()) {
+                if(product1.getId() == product.getId()) {
+                    orderView.getNewOrder().getProducts().remove(product1);
+                    break;
+                }
+            }
+        }
+
+        private void updateOrderTotalPrice(Order order) {
+            order.setTotalPrice(0);
+            for(Product product : order.getProducts()) {
+                order.setTotalPrice(order.getTotalPrice() + product.getPrice() * product.getQuantity());
+            }
+        }
+    }
+
+    class OrdersCreateOrderButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Client selectedClient = orderView.getSelectedClient();
+            List<Product> selectedProducts = orderView.getNewOrder().getProducts();
+            if(selectedProducts.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please add at least one product in the order!");
+            } else if (selectedClient == null) {
+                JOptionPane.showMessageDialog(null, "Please select a client!");
+            } else {
+                try {
+                    Order order = orderView.getNewOrder();
+                    order.setClient(selectedClient);
+                    orderService.create(order);
+                    JOptionPane.showMessageDialog(null, "Order created successfully!");
+                    orderView.setVisible(false);
+                    orderView = initOrderView();
+                    orderView.setVisible(true);
+                } catch (IllegalArgumentException exception) {
+                    JOptionPane.showMessageDialog(null, exception.getMessage());
+                }
             }
         }
     }
