@@ -30,8 +30,8 @@ public class ProductService {
     }
 
     public void create(Product product) throws IllegalArgumentException {
-        checkIfProductValid(product);
         try {
+            checkIfProductValid(product);
             productDAO.create(product);
         } catch (Exception e) {
             e.printStackTrace();

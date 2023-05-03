@@ -30,26 +30,28 @@ public class OrderDAO extends AbstractDAO<Order> {
         String sql1 = "INSERT INTO " + getTableName() + " (client_id, total_price) VALUES (?, ?)";
         String sql2 = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)";
         try(Connection connection = ConnectionFactory.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql1)) {
+            PreparedStatement statement = connection.prepareStatement(sql1, PreparedStatement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, order.getClient().getId());
             statement.setDouble(2, order.getTotalPrice());
             statement.executeUpdate();
+            try(ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    order.setId(rs.getInt("id"));
+                } else {
+                    throw new SQLException("Creating order failed, no ID obtained.");
+                }
+            }
+            for (Product product : order.getProducts()) {
+                try(PreparedStatement statement1 = connection.prepareStatement(sql2)) {
+                    statement1.setInt(1, order.getId());
+                    statement1.setInt(2, product.getId());
+                    statement1.setInt(3, product.getQuantity());
+                    statement1.executeUpdate();
+                }
+            }
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, Order.class.getName() + "DAO:create " + e.getMessage());
             e.printStackTrace();
-        }
-
-        for (Product product : order.getProducts()) {
-            try(Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql2)) {
-                statement.setInt(1, order.getId());
-                statement.setInt(2, product.getId());
-                statement.setInt(3, product.getQuantity());
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                LOGGER.log(Level.WARNING, Order.class.getName() + "DAO:create " + e.getMessage());
-                e.printStackTrace();
-            }
         }
     }
 
@@ -98,6 +100,7 @@ public class OrderDAO extends AbstractDAO<Order> {
             PreparedStatement statement1 = connection.prepareStatement(sql1)) {
             statement1.setInt(1, order.getClient().getId());
             statement1.setDouble(2, order.getTotalPrice());
+            statement1.executeUpdate();
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, Order.class.getName() + "DAO:updateById " + e.getMessage());
         }
@@ -107,6 +110,7 @@ public class OrderDAO extends AbstractDAO<Order> {
                 statement2.setInt(1, product.getId());
                 statement2.setInt(2, product.getQuantity());
                 statement2.setInt(3, order.getId());
+                statement2.executeUpdate();
             } catch (SQLException e) {
                 LOGGER.log(Level.WARNING, Order.class.getName() + "DAO:updateById " + e.getMessage());
             }
@@ -120,12 +124,14 @@ public class OrderDAO extends AbstractDAO<Order> {
         try(Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement1 = connection.prepareStatement(sql1)) {
             statement1.setInt(1, id);
+            statement1.executeQuery();
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, Order.class.getName() + "DAO:deleteById " + e.getMessage());
         }
         try(Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement2 = connection.prepareStatement(sql2)) {
             statement2.setInt(1, id);
+            statement2.executeQuery();
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, Order.class.getName() + "DAO:deleteById " + e.getMessage());
         }
