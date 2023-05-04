@@ -35,6 +35,13 @@ CREATE TABLE public.order_products(
     FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE
 );
 
+-- create the log table
+CREATE TABLE public.logs(
+    id SERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 -- Insert dummy data into the clients table
 INSERT INTO public.clients (name, email)
 VALUES
@@ -60,11 +67,11 @@ VALUES
 -- Insert dummy data into the orders table
 INSERT INTO public.orders (client_id, total_price)
 VALUES
-    (1, 35.25),
-    (2, 26.75),
-    (3, 44.25),
-    (4, 22.00),
-    (5, 63.75);
+    (1, 26.75),
+    (2, 25.50),
+    (3, 27.00),
+    (4, 51.25),
+    (5, 24.50);
 
 -- Insert dummy data into the order_products table
 INSERT INTO order_products (order_id, product_id, quantity)
@@ -81,3 +88,68 @@ VALUES
     (5, 1, 1),
     (5, 2, 1),
     (5, 3, 1);
+
+INSERT INTO public.logs (message)
+VALUES
+    ('=========================================
+                 BILL
+=========================================
+CLIENT NAME: John Doe
+
+PRODUCTS:
+Name                 Price      Quantity   Subtotal
+--------------------------------------------------
+Product 1            $10.50     2          $21.00
+Product 2            $5.75      1          $5.75
+
+Total:                                   $26.75    '),
+    ('=========================================
+                 BILL
+=========================================
+CLIENT NAME: Jane Doe
+
+PRODUCTS:
+Name                 Price      Quantity   Subtotal
+--------------------------------------------------
+Product 2            $5.75      3          $17.25
+Product 3            $8.25      1          $8.25
+
+Total:                                   $25.50    '),
+    ('=========================================
+                 BILL
+=========================================
+CLIENT NAME: Alice Smith
+
+PRODUCTS:
+Name                 Price      Quantity   Subtotal
+--------------------------------------------------
+Product 1            $10.50     1          $10.50
+Product 3            $8.25      2          $16.50
+
+Total:                                   $27.00    '),
+    ('=========================================
+                 BILL
+=========================================
+CLIENT NAME: Bob Johnson
+
+PRODUCTS:
+Name                 Price      Quantity   Subtotal
+--------------------------------------------------
+Product 1            $10.50     3          $31.50
+Product 2            $5.75      2          $11.50
+Product 3            $8.25      1          $8.25
+
+Total:                                   $51.25    '),
+    ('=========================================
+                 BILL
+=========================================
+CLIENT NAME: Eva Green
+
+PRODUCTS:
+Name                 Price      Quantity   Subtotal
+--------------------------------------------------
+Product 1            $10.50     1          $10.50
+Product 2            $5.75      1          $5.75
+Product 3            $8.25      1          $8.25
+
+Total:                                   $24.50    ');
