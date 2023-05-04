@@ -14,6 +14,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * Controller class is the main class of the presentation layer.
+ * It has access to all the views and services. It also contains all the listeners.
+ */
 public class Controller {
     private ProductService productService;
     private ClientService clientService;
