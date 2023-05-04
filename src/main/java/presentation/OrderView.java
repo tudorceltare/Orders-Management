@@ -131,6 +131,10 @@ public class OrderView extends JFrame {
         this.selectedOrder = selectedOrder;
     }
 
+    public Order getSelectedOrder() {
+        return selectedOrder;
+    }
+
     public JTable getClientsTable() {
         return clientsTable;
     }

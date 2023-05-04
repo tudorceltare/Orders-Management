@@ -1,6 +1,8 @@
 package service;
 
+import dao.LogDAO;
 import dao.OrderDAO;
+import model.Bill;
 import model.Order;
 import model.Product;
 
@@ -8,9 +10,11 @@ import java.util.List;
 
 public class OrderService {
     private OrderDAO orderDAO;
+    private LogDAO logDAO;
     private ProductService productService;
     public OrderService() {
         this.orderDAO = new OrderDAO();
+        this.logDAO = new LogDAO();
         this.productService = new ProductService();
     }
 
@@ -42,6 +46,9 @@ public class OrderService {
                 productService.updateById(productFromStock);
             }
             orderDAO.create(order);
+            String message = this.generateBill(order);
+            Bill bill = new Bill(0, message, null);
+            this.saveBill(bill);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,6 +78,32 @@ public class OrderService {
         return product.getQuantity() >= quantity;
     }
 
+    public String generateBill(Order order) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=========================================\n");
+        sb.append("                 BILL                    \n");
+        sb.append("=========================================\n");
+        sb.append("CLIENT NAME: ").append(order.getClient().getName()).append("\n\n");
+        sb.append("PRODUCTS:\n");
+        sb.append(String.format("%-20s %-10s %-10s %-10s\n", "Name", "Price", "Quantity", "Subtotal"));
+        sb.append("--------------------------------------------------\n");
+        for (Product product : order.getProducts()) {
+            sb.append(String.format("%-20s $%-9.2f %-10d $%-9.2f\n", product.getName(), product.getPrice(), product.getQuantity(), product.getPrice() * product.getQuantity()));
+        }
+        sb.append("\n");
+        sb.append(String.format("%-40s $%-9.2f", "Total:", order.getTotalPrice()));
+        return sb.toString();
+    }
+
+    public void saveBill(Bill bill) {
+        this.checkIfBillIsValid(bill);
+        try {
+            logDAO.create(bill);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean checkIfNewOrderAlreadyContainsSelectedProduct(Order order, Product selectedProduct) {
         for (Product product : order.getProducts()) {
             if (product.getId() == selectedProduct.getId()) {
@@ -89,6 +122,12 @@ public class OrderService {
         }
         if (order.getTotalPrice() < 0) {
             throw new IllegalArgumentException("Total price cannot be negative");
+        }
+    }
+
+    private void checkIfBillIsValid(Bill bill) throws IllegalArgumentException {
+        if (bill.message() == null || bill.message().isEmpty()) {
+            throw new IllegalArgumentException("Message cannot be empty");
         }
     }
 }

@@ -73,6 +73,7 @@ public class Controller {
         orderView.addNewOrderProductsTableListener(new OrdersNewOrderProductsTableListener());
         orderView.addRemoveProductButtonListener(new OrdersRemoveProductButtonListener());
         orderView.addCreateOrderButtonListener(new OrdersCreateOrderButtonListener());
+        orderView.addGenerateBillButtonListener(new OrdersGenerateBillButtonListener());
         return orderView;
     }
 
@@ -486,6 +487,23 @@ public class Controller {
                     orderView.setVisible(false);
                     orderView = initOrderView();
                     orderView.setVisible(true);
+                } catch (IllegalArgumentException exception) {
+                    JOptionPane.showMessageDialog(null, exception.getMessage());
+                }
+            }
+        }
+    }
+
+    class OrdersGenerateBillButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Order selectedOrder = orderView.getSelectedOrder();
+            if(selectedOrder == null) {
+                JOptionPane.showMessageDialog(null, "Please select an order!");
+            } else {
+                try {
+                    String message = orderService.generateBill(selectedOrder);
+                    orderView.setBillTextArea(message);
                 } catch (IllegalArgumentException exception) {
                     JOptionPane.showMessageDialog(null, exception.getMessage());
                 }
