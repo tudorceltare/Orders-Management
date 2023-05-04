@@ -14,6 +14,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * OrderView class is used to model the order view of the application.
+ */
 public class OrderView extends JFrame {
     private OrderService orderService;
     private ClientService clientService;

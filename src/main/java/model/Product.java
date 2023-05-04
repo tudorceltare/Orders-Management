@@ -2,6 +2,9 @@ package model;
 
 import lombok.*;
 
+/**
+ * Product class is used to model the products of the store.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

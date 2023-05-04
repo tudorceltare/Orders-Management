@@ -5,6 +5,9 @@ import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * ConnectionFactory class is used to create a connection to the database. It is a singleton class.
+ */
 public class ConnectionFactory {
     public static final Logger LOGGER = Logger.getLogger(ConnectionFactory.class.getName());
     public static final String DRIVER = "org.postgresql.Driver";

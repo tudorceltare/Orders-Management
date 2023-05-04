@@ -59,6 +59,11 @@ public class OrderDAO extends AbstractDAO<Order> {
         }
     }
 
+    /**
+     * Executes two queries to get all the orders from the database and all the products from the database.
+     * @return a list of orders
+     * @throws SQLException if the connection to the database fails
+     */
     @Override
     public List<Order> findAll() throws SQLException {
         String sql1 = "SELECT * FROM " + getTableName();
@@ -74,6 +79,12 @@ public class OrderDAO extends AbstractDAO<Order> {
         }
     }
 
+    /**
+     * Executes two queries to get all the orders: one to get the order with the given id and one to get all the
+     * products from the database where the order_id is the given id.
+     * @param id The id of the order to be found
+     * @return an order with the given id
+     */
     @Override
     public Order findById(int id) {
         String sql1 = "SELECT * FROM " + getTableName() + " WHERE id = ?";
@@ -96,6 +107,11 @@ public class OrderDAO extends AbstractDAO<Order> {
         return null;
     }
 
+    /**
+     * Executes two queries to update an order: one to update the order with the given id and one to update all the
+     * products from the database where the order_id is the given id.
+     * @param order The new order to be updated, the id is the same
+     */
     @Override
     public void updateById(Order order) {
         String sql1 = "UPDATE " + getTableName() + " SET client_id = ?, total_price = ? WHERE id = ?";
@@ -121,6 +137,11 @@ public class OrderDAO extends AbstractDAO<Order> {
         }
     }
 
+    /**
+     * Executes two queries to delete an order: one to delete the order with the given id and one to delete all the
+     * products from the database where the order_id is the given id. This is a cascade delete.
+     * @param id The id of the order to be deleted
+     */
     @Override
     public void deleteById(int id) {
         String sql1 = "DELETE FROM " + getTableName() + " WHERE id = ?";
@@ -143,8 +164,9 @@ public class OrderDAO extends AbstractDAO<Order> {
 
     /**
      * Maps the result set to a list of orders with their products and clients.
-     * @param rs1 the result set of the first query
-     * @param rs2 the result set of the second query
+     * @param rs1 the result set of the first query, it represents the orders
+     * @param rs2 the result set of the second query, it represents the products of the orders returned from the first
+     *            query
      * @param products the list of products
      * @param clients the list of clients
      * @return the list of orders

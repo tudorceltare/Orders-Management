@@ -24,6 +24,9 @@ import java.util.logging.Logger;
  * Method <b>updateById</b>: updates an entity in the database using
  *  "<i>UPDATE tableName SET field1 = ?, field2 = ?, ... WHERE id = ?</i>" query.<br>
  * Method <b>deleteById</b>: deletes an entity from the database using "<i>DELETE FROM tableName WHERE id = ?</i>" query.<br>
+ * Method <b>getTableName</b>: returns the name of the table in the database.<br>
+ * Method <b>mapToEntity</b>: maps the result set of a query to a list of entities.<br>
+ * Method <b>camelCaseToSnakeCase</b>: converts a string from camel case to snake case.<br>
  * @param <T> The type of the entity
  */
 public abstract class AbstractDAO<T> {
@@ -171,7 +174,13 @@ public abstract class AbstractDAO<T> {
         }
     }
 
-    // helper method to convert a ResultSet row to an entity object
+    /**
+     * Maps a ResultSet to a list of entities. The entities are created using reflection, the fields are extracted by
+     * cycling through the fields of the entity class and the values are set using reflection.
+     * @param rs The ResultSet to be mapped
+     * @return A list of entities
+     * @throws SQLException If the query fails
+     */
     protected List<T> mapToEntity(ResultSet rs) throws SQLException {
         List<T> entities = new ArrayList<>();
         Constructor<?>[] constructors = type.getConstructors();
@@ -203,12 +212,22 @@ public abstract class AbstractDAO<T> {
         return entities;
     }
 
-    // helper method to get the table name for the entity
+    /**
+     * This is a helper method when using Postgresql that returns the name of the table in the database. The name of
+     * the table is the plural of the entity name, represented by the entity class in the model package, in lowercase.
+     * For example, if the entity is "User", the table name is "users".
+     * @return The name of the table in the database
+     */
     protected String getTableName() {
         return type.getSimpleName().toLowerCase() + "s";
     }
 
-    // helper method to convert camelCase to snake_case
+    /**
+     * This is a helper method when using Postgresql database. Postgresql uses snake_case for the column names, but the
+     * java convention is camelCase. This method converts a camelCase string to a snake_case string.
+     * @param camelCase The camelCase string to be converted
+     * @return The snake_case string
+     */
     protected String camelCaseToSnakeCase(String camelCase) {
         String regex = "([a-z])([A-Z]+)";
         String replacement = "$1_$2";

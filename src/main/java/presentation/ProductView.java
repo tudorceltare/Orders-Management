@@ -9,6 +9,9 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * ProductView class is used to model the product view of the application.
+ */
 public class ProductView extends JFrame {
     private JLabel productsLabel;
     private JTable productsTable;

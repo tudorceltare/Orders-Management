@@ -9,6 +9,9 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * ClientView class is used to model the client view of the application.
+ */
 public class ClientView extends JFrame {
     private ClientService clientService;
     private JPanel clientsPanel;

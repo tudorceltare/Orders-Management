@@ -17,6 +17,8 @@ import java.util.List;
 /**
  * Controller class is the main class of the presentation layer.
  * It has access to all the views and services. It also contains all the listeners.
+ * This class contains a lot of inner classes that implement listeners, these inner classes also some logic for making
+ * sure that the data introduced by the user is readable and valid.
  */
 public class Controller {
     private ProductService productService;
