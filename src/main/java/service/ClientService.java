@@ -5,6 +5,10 @@ import model.Client;
 
 import java.util.List;
 
+/**
+ * The ClientService is in the business layer of the application. It is used to communicate between the controller layer
+ * and the data access layer. All the checks are made here before calling the data access layer.
+ */
 public class ClientService {
     private ClientDAO clientDAO;
 

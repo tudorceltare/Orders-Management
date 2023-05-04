@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+/**
+ * OrderDAO class extends AbstractDAO class and has access to all its methods.
+ * All methods are overridden because the Orders table has a many-to-many relationship with the Products table.
+ */
 public class OrderDAO extends AbstractDAO<Order> {
 
     private ClientDAO clientDAO;
@@ -137,6 +141,15 @@ public class OrderDAO extends AbstractDAO<Order> {
         }
     }
 
+    /**
+     * Maps the result set to a list of orders with their products and clients.
+     * @param rs1 the result set of the first query
+     * @param rs2 the result set of the second query
+     * @param products the list of products
+     * @param clients the list of clients
+     * @return the list of orders
+     * @throws SQLException if the result set is invalid
+     */
     private List<Order> mapToEntity(ResultSet rs1, ResultSet rs2, List<Product> products, List<Client> clients) throws SQLException {
         Map<Integer, Order> orders = new HashMap<>();
         Map<Integer, Product> productMap = new HashMap<>();

@@ -8,6 +8,10 @@ import model.Product;
 
 import java.util.List;
 
+/**
+ * The OrderService is in the business layer of the application. It is used to communicate between the controller layer
+ * and the data access layer. All the checks are made here before calling the data access layer.
+ */
 public class OrderService {
     private OrderDAO orderDAO;
     private LogDAO logDAO;

@@ -5,6 +5,10 @@ import model.Product;
 
 import java.util.List;
 
+/**
+ * The ProductService is in the business layer of the application. It is used to communicate between the controller layer
+ * and the data access layer. All the checks are made here before calling the data access layer.
+ */
 public class ProductService {
     private ProductDAO productDAO;
     public ProductService() {
